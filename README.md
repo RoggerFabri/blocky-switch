@@ -1,5 +1,10 @@
 # Blocky Switch
 
+<div align="center">
+  <img src="images/icon128.png" alt="Blocky Switch Icon" width="128">
+</div>
+</br>
+
 A simple Chrome extension to enable or disable blocking on a [Blocky DNS](https://0xerr0r.github.io/blocky/latest/) server.
 
 ## About
