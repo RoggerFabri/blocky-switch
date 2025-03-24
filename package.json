@@ -1,0 +1,12 @@
+{
+  "name": "blocky-switch",
+  "version": "1.0.0",
+  "description": "A simple Chrome extension to enable or disable blocking on a Blocky server",
+  "scripts": {
+    "generate-icons": "node generate_icons.js"
+  },
+  "devDependencies": {
+    "sharp": "^0.32.1"
+  },
+  "private": true
+} 

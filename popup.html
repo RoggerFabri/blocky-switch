@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blocky Switch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --success-color: #4ade80;
+      --danger-color: #f87171;
+      --text-color: #333;
+      --text-light: #666;
+      --bg-color: #fff;
+      --bg-secondary: #f9fafb;
+      --border-color: #e5e7eb;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --transition: all 0.2s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      line-height: 1.5;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-right: auto;
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .host-container {
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-light);
+    }
+
+    .host-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .host-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+
+    .host-input.invalid-host {
+      border-color: var(--danger-color);
+      background-color: rgba(248, 113, 113, 0.05);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin-right: 8px;
+      position: relative;
+    }
+
+    .status-dot.online {
+      background-color: var(--success-color);
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.2);
+    }
+
+    .status-dot.offline {
+      background-color: var(--danger-color);
+      box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.2);
+    }
+
+    .status-dot.connecting {
+      background-color: #e9ecef;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+      }
+      70% {
+        box-shadow: 0 0 0 6px rgba(0, 0, 0, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+      }
+    }
+
+    .status-text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .switch-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: var(--bg-color);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+    }
+
+    .switch-label {
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ddd;
+      transition: var(--transition);
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: var(--transition);
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px var(--primary-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .status {
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 14px;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .status-on {
+      color: var(--success-color);
+    }
+
+    .status-off {
+      color: var(--danger-color);
+    }
+
+    .status-changing {
+      animation: blink 0.3s;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Blocky Switch</div>
+    </div>
+
+    <div class="card">
+      <div class="host-container">
+        <label for="host" class="input-label">Host URL</label>
+        <input type="text" id="host" class="host-input" placeholder="Enter host URL (e.g., http://localhost:8080)">
+      </div>
+
+      <div class="status-indicator">
+        <div id="status-dot" class="status-dot"></div>
+        <span id="connection-status" class="status-text">Not connected</span>
+      </div>
+    </div>
+
+    <div class="switch-container">
+      <span class="switch-label">Blocking</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="blocking-toggle">
+          <span class="slider"></span>
+        </label>
+        <span id="blocking-status" class="status">Off</span>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 
