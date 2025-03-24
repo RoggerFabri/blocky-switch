@@ -6,7 +6,7 @@
     "generate-icons": "node generate_icons.js"
   },
   "devDependencies": {
-    "sharp": "^0.32.1"
+    "sharp": "^0.32.6"
   },
   "private": true
-} 
+}
