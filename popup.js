@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const blockingStatus = document.getElementById('blocking-status');
   const statusDot = document.getElementById('status-dot');
   const connectionStatus = document.getElementById('connection-status');
+  const disable5mBtn = document.getElementById('disable-5m');
+  const disable30mBtn = document.getElementById('disable-30m');
 
   // Load saved host from storage
   chrome.storage.sync.get(['blockySwitchHost', 'lastBlockingStatus'], function(data) {
@@ -18,6 +20,69 @@ document.addEventListener('DOMContentLoaded', function() {
       checkBlockingStatus();
     }
   });
+
+  // Add click handlers for temporary disable buttons
+  disable5mBtn.addEventListener('click', () => temporaryDisable(300)); // 5 minutes in seconds
+  disable30mBtn.addEventListener('click', () => temporaryDisable(1800)); // 30 minutes in seconds
+
+  // Function to temporarily disable blocking
+  function temporaryDisable(seconds) {
+    const host = hostInput.value.trim();
+    if (!host) {
+      console.error('Please enter a valid host URL');
+      return;
+    }
+
+    // Disable buttons while action is in progress
+    disableButtons();
+
+    // Disable blocking with duration
+    fetch(`${host}/api/blocking/disable?duration=${seconds}s`, { 
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      updateBlockingUI(false);
+      updateBadgeStatus(false);
+      enableButtons();
+    })
+    .catch(fetchError => {
+      console.error('Disable error:', fetchError.message);
+      
+      // Try with background script as fallback
+      chrome.runtime.sendMessage(
+        { action: 'testConnection', url: `${host}/api/blocking/disable?duration=${seconds}s` },
+        (response) => {
+          if (chrome.runtime.lastError || !response || !response.success) {
+            enableButtons();
+            return;
+          }
+          
+          updateBlockingUI(false);
+          updateBadgeStatus(false);
+          enableButtons();
+        }
+      );
+    });
+  }
+
+  // Function to disable buttons
+  function disableButtons() {
+    disable5mBtn.disabled = true;
+    disable30mBtn.disabled = true;
+  }
+
+  // Function to enable buttons
+  function enableButtons() {
+    disable5mBtn.disabled = false;
+    disable30mBtn.disabled = false;
+  }
 
   // Save host when changed
   hostInput.addEventListener('change', function() {

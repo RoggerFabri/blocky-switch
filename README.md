@@ -9,6 +9,7 @@ This extension was created to provide easy access to the API of [Blocky DNS](htt
 ## Features
 
 - Toggle blocking on/off with a simple switch
+- Quick temporary disable buttons (5 minutes and 30 minutes)
 - Configure the host URL for your Blocky server
 - View current connection and blocking status
 - Toolbar badge shows current status at a glance without opening the popup
@@ -26,7 +27,8 @@ This extension was created to provide easy access to the API of [Blocky DNS](htt
 1. Click the Blocky Switch icon in the Chrome toolbar
 2. Enter your Blocky server host URL (e.g., `http://localhost:8080`)
 3. Use the toggle switch to enable or disable blocking
-4. The extension icon in the toolbar will show a badge with the current status:
+4. Use the temporary disable buttons to quickly disable blocking for 5 or 30 minutes
+5. The extension icon in the toolbar will show a badge with the current status:
    - ON (green): Blocking is enabled
    - OFF (red): Blocking is disabled
 
@@ -37,6 +39,7 @@ The extension uses the following API endpoints from the Blocky DNS server:
 - `GET {host}/api/blocking/status` - Get the current blocking status
 - `GET {host}/api/blocking/enable` - Enable blocking
 - `GET {host}/api/blocking/disable` - Disable blocking
+- `GET {host}/api/blocking/disable?duration=300s` - Temporarily disable blocking for specified duration (in seconds)
 
 ## Troubleshooting
 

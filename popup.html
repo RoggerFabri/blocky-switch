@@ -233,6 +233,42 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
+
+    .shortcut-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .shortcut-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .shortcut-btn:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .shortcut-btn:active {
+      transform: translateY(1px);
+    }
+
+    .shortcut-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -262,6 +298,11 @@
         </label>
         <span id="blocking-status" class="status">Off</span>
       </div>
+    </div>
+
+    <div class="shortcut-buttons">
+      <button id="disable-5m" class="shortcut-btn">Disable for 5m</button>
+      <button id="disable-30m" class="shortcut-btn">Disable for 30m</button>
     </div>
   </div>
   <script src="popup.js"></script>
