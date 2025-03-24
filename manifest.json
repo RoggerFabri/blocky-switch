@@ -10,7 +10,7 @@
       "48": "images/icon48.png",
       "128": "images/icon128.png"
     },
-    "default_title": "Blocky Switch - Click to toggle"
+    "default_title": "Blocky Switch"
   },
   "background": {
     "service_worker": "background.js",
