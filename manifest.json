@@ -17,8 +17,7 @@
     "type": "module"
   },
   "permissions": [
-    "storage",
-    "alarms"
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
