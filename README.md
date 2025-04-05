@@ -5,6 +5,8 @@
 </div>
 </br>
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/ijljpfdmompfofnlgknfnihmpplieamb?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/blocky-switch/ijljpfdmompfofnlgknfnihmpplieamb)
+
 A simple Chrome extension to enable or disable blocking on a [Blocky DNS](https://0xerr0r.github.io/blocky/latest/) server.
 
 ## About
