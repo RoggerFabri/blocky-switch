@@ -47,13 +47,13 @@ chrome.runtime.onInstalled.addListener((details) => {
       'lastRefreshTime': new Date().toISOString()
     }, function() {
       logWithTimestamp('Default settings initialized');
-      // Initialize badge to unknown state
-      updateBadge(null);
+      // Initialize badge to OFF state by default
+      updateBadge(false);
     });
   } else {
     // Load last known status from storage and set badge
     chrome.storage.sync.get(['lastBlockingStatus'], function(data) {
-      updateBadge(data.lastBlockingStatus);
+      updateBadge(data.lastBlockingStatus ?? false);
     });
   }
   
@@ -221,12 +221,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Check for status periodically if we have a host stored
 setInterval(() => {
-  chrome.storage.sync.get(['blockySwitchHost'], function(data) {
+  chrome.storage.sync.get(['blockySwitchHost', 'lastBlockingStatus'], function(data) {
     if (data.blockySwitchHost) {
       checkStatus(data.blockySwitchHost).catch(error => {
         // Log errors but don't do anything else
         logWithTimestamp('Periodic status check failed', { error: error.message });
       });
+    } else {
+      // If no host is configured, ensure badge shows OFF state
+      updateBadge(false);
     }
   });
 }, 30000); // Check every 30 seconds 
