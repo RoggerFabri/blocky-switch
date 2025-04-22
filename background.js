@@ -219,14 +219,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// Check for status periodically if we have a host stored
-setInterval(() => {
-  chrome.storage.sync.get(['blockySwitchHost'], function(data) {
-    if (data.blockySwitchHost) {
-      checkStatus(data.blockySwitchHost).catch(error => {
-        // Log errors but don't do anything else
-        logWithTimestamp('Periodic status check failed', { error: error.message });
-      });
-    }
-  });
-}, 30000); // Check every 30 seconds 
+// Create an alarm to check status periodically
+chrome.alarms.create('checkStatus', {
+  periodInMinutes: 0.5, // Check every 30 seconds
+  delayInMinutes: 0 // Start immediately
+});
+
+// Listen for alarm
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'checkStatus') {
+    chrome.storage.sync.get(['blockySwitchHost'], function(data) {
+      if (data.blockySwitchHost) {
+        checkStatus(data.blockySwitchHost).catch(error => {
+          // Log errors but don't do anything else
+          logWithTimestamp('Periodic status check failed', { error: error.message });
+        });
+      }
+    });
+  }
+}); 
