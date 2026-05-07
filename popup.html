@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Blocky Switch</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary-color: #4361ee;
       --success-color: #4ade80;
       --danger-color: #f87171;
+      --warning-color: #fb923c;
       --text-color: #333;
       --text-light: #666;
       --bg-color: #fff;
@@ -28,63 +27,236 @@
 
     body {
       width: 320px;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: var(--text-color);
       background-color: var(--bg-color);
       line-height: 1.5;
     }
 
     .container {
-      padding: 20px;
+      padding: 16px;
     }
 
     .header {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border-color);
     }
 
     .logo {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--primary-color);
-      margin-right: auto;
     }
 
-    .card {
+    /* ── Host list ──────────────────────────────────────────────────────── */
+
+    #host-list-wrapper {
+      margin-bottom: 10px;
+    }
+
+    #empty-state {
+      font-size: 13px;
+      color: var(--text-light);
+      text-align: center;
+      padding: 12px 0 4px;
+    }
+
+    /* ── Host card ──────────────────────────────────────────────────────── */
+
+    .host-card {
       background-color: var(--bg-secondary);
       border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 16px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
       box-shadow: var(--shadow);
+    }
+
+    .host-card-main {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .host-url {
+      flex: 1;
+      min-width: 0; /* required for text-overflow to work in flex */
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text-color);
+    }
+
+    .host-blocking-label {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 24px;
+      text-align: right;
+      color: var(--text-light);
+      flex-shrink: 0;
+    }
+
+    .host-blocking-label.label-on  { color: var(--success-color); }
+    .host-blocking-label.label-off { color: var(--danger-color); }
+
+    .host-remove-btn {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 0 2px;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .host-remove-btn:hover { color: var(--danger-color); }
+
+    .host-shortcuts {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .host-timer {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 6px;
+      margin-bottom: 2px;
+    }
+
+    .card-error {
+      display: block;
+      font-size: 11px;
+      color: var(--danger-color);
+      margin-top: 5px;
+    }
+
+    /* ── Status dot ─────────────────────────────────────────────────────── */
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ccc;
+      flex-shrink: 0;
+    }
+
+    .status-dot.online {
+      background-color: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+    }
+
+    .status-dot.offline {
+      background-color: var(--danger-color);
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+    }
+
+    .status-dot.connecting {
+      background-color: #e9ecef;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(0, 0, 0, 0.2); }
+      70%  { box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);   }
+      100% { box-shadow: 0 0 0 0   rgba(0, 0, 0, 0);   }
+    }
+
+    /* ── Toggle switch ──────────────────────────────────────────────────── */
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ddd;
+      transition: var(--transition);
+      border-radius: 22px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: var(--transition);
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    input:checked + .slider              { background-color: var(--primary-color); }
+    input:focus   + .slider              { box-shadow: 0 0 1px var(--primary-color); }
+    input:checked + .slider:before       { transform: translateX(18px); }
+    input:disabled + .slider             { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Shortcut buttons ───────────────────────────────────────────────── */
+
+    .shortcut-btn {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
       transition: var(--transition);
     }
 
-    .card:hover {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    .shortcut-btn:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--primary-color);
+      color: var(--primary-color);
     }
 
-    .host-container {
-      margin-bottom: 16px;
+    .shortcut-btn:active  { transform: translateY(1px); }
+    .shortcut-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
-    .input-label {
-      display: block;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 8px;
-      color: var(--text-light);
+    /* ── Add host section ───────────────────────────────────────────────── */
+
+    .add-host-section {
+      margin-bottom: 10px;
+    }
+
+    .add-host-row {
+      display: flex;
+      gap: 7px;
     }
 
     .host-input {
-      width: 100%;
-      padding: 10px 12px;
+      flex: 1;
+      padding: 9px 10px;
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
+      font-family: inherit;
+      font-size: 13px;
       transition: var(--transition);
     }
 
@@ -99,176 +271,106 @@
       background-color: rgba(248, 113, 113, 0.05);
     }
 
-    .status-indicator {
-      display: flex;
-      align-items: center;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #ccc;
-      margin-right: 8px;
-      position: relative;
-    }
-
-    .status-dot.online {
-      background-color: var(--success-color);
-      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.2);
-    }
-
-    .status-dot.offline {
-      background-color: var(--danger-color);
-      box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.2);
-    }
-
-    .status-dot.connecting {
-      background-color: #e9ecef;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
-      }
-      70% {
-        box-shadow: 0 0 0 6px rgba(0, 0, 0, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-      }
-    }
-
-    .status-text {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .switch-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background-color: var(--bg-color);
-      border-radius: var(--radius);
-      border: 1px solid var(--border-color);
-    }
-
-    .switch-label {
-      font-weight: 500;
-    }
-
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 48px;
-      height: 24px;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ddd;
-      transition: var(--transition);
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: var(--transition);
-      border-radius: 50%;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    input:checked + .slider {
+    .add-btn {
+      padding: 9px 13px;
       background-color: var(--primary-color);
-    }
-
-    input:focus + .slider {
-      box-shadow: 0 0 1px var(--primary-color);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(24px);
-    }
-
-    .status {
-      font-weight: 600;
-      color: var(--text-light);
-      font-size: 14px;
-      min-width: 30px;
-      text-align: right;
-    }
-
-    .status-on {
-      color: var(--success-color);
-    }
-
-    .status-off {
-      color: var(--danger-color);
-    }
-
-    .status-changing {
-      animation: blink 0.3s;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .shortcut-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    .shortcut-btn {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1px solid var(--border-color);
+      color: white;
+      border: none;
       border-radius: var(--radius);
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .add-btn:hover  { background-color: #3451d1; }
+    .add-btn:active { transform: translateY(1px); }
+
+    .host-hint {
+      font-size: 11px;
+      color: var(--danger-color);
+      margin-top: 4px;
+      display: none;
+    }
+
+    /* ── Global error ───────────────────────────────────────────────────── */
+
+    .error-message {
+      display: none;
+      font-size: 12px;
+      color: var(--danger-color);
+      background-color: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      border-radius: var(--radius);
+      padding: 7px 10px;
+    }
+
+    /* ── All section ────────────────────────────────────────────────────── */
+
+    .all-section {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .all-toggle-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+    }
+
+    .all-shortcuts {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      padding: 0 10px 8px;
+    }
+
+    .all-toggle-label {
       font-size: 13px;
       font-weight: 500;
+      color: var(--text-light);
+    }
+
+    .all-toggle-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .all-blocking-label {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 24px;
+      text-align: right;
+      color: var(--text-light);
+    }
+
+    .all-blocking-label.label-on    { color: var(--success-color); }
+    .all-blocking-label.label-off   { color: var(--danger-color); }
+    .all-blocking-label.label-mixed { color: var(--warning-color); }
+
+    /* ── Expand button ──────────────────────────────────────────────────── */
+
+    .host-expand-btn {
+      background: none;
+      border: none;
+      color: #9ca3af;
       cursor: pointer;
-      transition: var(--transition);
+      padding: 0 2px;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+      flex-shrink: 0;
     }
-
-    .shortcut-btn:hover {
-      background-color: var(--bg-secondary);
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .shortcut-btn:active {
-      transform: translateY(1px);
-    }
-
-    .shortcut-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
+    .host-expand-btn:hover { color: var(--primary-color); }
+    .host-expand-btn svg   { transition: transform 0.2s ease; }
+    .host-card.expanded .host-expand-btn svg { transform: rotate(90deg); }
   </style>
 </head>
 <body>
@@ -277,34 +379,37 @@
       <div class="logo">Blocky Switch</div>
     </div>
 
-    <div class="card">
-      <div class="host-container">
-        <label for="host" class="input-label">Host URL</label>
-        <input type="text" id="host" class="host-input" placeholder="Enter host URL (e.g., http://localhost:8080)">
+    <div id="all-toggle-row" class="all-section" style="display:none">
+      <div class="all-toggle-header">
+        <span class="all-toggle-label">All</span>
+        <div class="all-toggle-controls">
+          <span id="all-blocking-label" class="all-blocking-label"></span>
+          <label class="toggle-switch" aria-label="Toggle all hosts">
+            <input type="checkbox" id="all-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
-
-      <div class="status-indicator">
-        <div id="status-dot" class="status-dot"></div>
-        <span id="connection-status" class="status-text">Not connected</span>
-      </div>
+      <div id="all-shortcuts" class="all-shortcuts"></div>
     </div>
 
-    <div class="switch-container">
-      <span class="switch-label">Blocking</span>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label class="toggle-switch">
-          <input type="checkbox" id="blocking-toggle">
-          <span class="slider"></span>
-        </label>
-        <span id="blocking-status" class="status">Off</span>
+    <div id="host-list-wrapper">
+      <div id="host-list"></div>
+    </div>
+    <p id="empty-state" style="display:none">No hosts configured. Add one below.</p>
+
+    <div class="add-host-section">
+      <div class="add-host-row">
+        <input type="text" id="add-host-input" class="host-input"
+               placeholder="http://blocky.host:4000"
+               aria-label="New host URL">
+        <button id="add-host-btn" class="add-btn">Add</button>
       </div>
+      <span id="add-host-hint" class="host-hint"></span>
     </div>
 
-    <div class="shortcut-buttons">
-      <button id="disable-5m" class="shortcut-btn">Disable for 5m</button>
-      <button id="disable-30m" class="shortcut-btn">Disable for 30m</button>
-    </div>
+    <div id="error-message" class="error-message"></div>
   </div>
   <script src="popup.js"></script>
 </body>
-</html> 
+</html>
